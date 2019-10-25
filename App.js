@@ -1,11 +1,12 @@
-import React, { useState, useContext, createContext } from 'react';
+import React, { useState, useContext, createContext, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
   View,
   Alert,
   ScrollView,
-  Dimensions
+  Dimensions,
+  AsyncStorage
 } from 'react-native';
 import { loadAsync } from 'expo-font';
 import { AppLoading } from 'expo';
@@ -21,12 +22,17 @@ const loadFont = () => {
 const DimensionsContext = createContext(0);
 export { DimensionsContext };
 export default function App() {
+  const saveTasks = async tasks => {
+    try {
+      await AsyncStorage.setItem('tasks', JSON.stringify(tasks));
+    } catch {}
+  };
   const [fontLoaded, setFontLoaded] = useState(false);
   const [isAddingNewTask, setIsAddingNewTask] = useState(false);
-  const [tasks, setTasks] = useState([
-    { title: 'Working', isDone: true },
-    { title: 'Eating', isDone: false }
-  ]);
+  const [tasks, setTasks] = useState([]);
+  useEffect(() => {
+    AsyncStorage.getItem('tasks').then(tasks => setTasks(tasks));
+  }, []);
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
   Dimensions.addEventListener('change', () => {
     setDimensions(Dimensions.get('window'));
@@ -34,6 +40,7 @@ export default function App() {
   const addTask = task => {
     const newTasks = [...tasks, { title: task, isDone: false }];
     setTasks(newTasks);
+    saveTasks(newTasks);
   };
   const deleteTask = index => {
     Alert.alert('タスクを消除', 'タスクを消除しますか?', [
@@ -43,6 +50,7 @@ export default function App() {
         onPress: () => {
           const newTasks = tasks.filter((item, i) => i !== index);
           setTasks(newTasks);
+          saveTasks(newTasks);
         }
       },
       {
@@ -59,6 +67,7 @@ export default function App() {
       return item;
     });
     setTasks(newTasks);
+    saveTasks(newTasks);
   };
   const unDoneTask = index => {
     const newTasks = tasks.map((item, i) => {
@@ -68,6 +77,7 @@ export default function App() {
       return item;
     });
     setTasks(newTasks);
+    saveTasks(newTasks);
   };
   if (!fontLoaded) {
     return (

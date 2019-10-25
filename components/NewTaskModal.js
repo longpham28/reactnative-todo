@@ -52,6 +52,7 @@ export default function NewTaskModal(props) {
                       setInput('');
                       props.onCancel();
                     }}
+                    color={Color.darkPrimary}
                   ></Button>
                 </View>
                 <View style={styles.button}>
@@ -61,6 +62,7 @@ export default function NewTaskModal(props) {
                       setInput('');
                       props.onCancel();
                     }}
+                    color={Color.accent}
                   ></Button>
                 </View>
               </View>
