@@ -1,14 +1,34 @@
 import React from 'react';
-import { View, StyleSheet, Text, FlatList, Button } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  Text,
+  FlatList,
+  Button,
+  SafeAreaView
+} from 'react-native';
 import Color from '../constant/Color';
 function TaskRow(props) {
   return (
-    <View style={styles.taskRow}>
+    <View style={{ ...styles.taskRow, opacity: props.isDone ? 0.4 : 1 }}>
       <View style={styles.textContainer}>
         <Text>{props.children}</Text>
       </View>
-      <View style={styles.button}>
-        <Button title="DEL" onPress={props.onDel} color={Color.accent}></Button>
+      <View style={styles.buttonsContainter}>
+        <View style={styles.button}>
+          <Button
+            title={props.isDone ? '未完了' : '完了'}
+            onPress={props.isDone ? props.onUnDone : props.onDone}
+            color={Color.darkPrimary}
+          ></Button>
+        </View>
+        <View style={styles.button}>
+          <Button
+            title="消除"
+            onPress={props.onDel}
+            color={Color.accent}
+          ></Button>
+        </View>
       </View>
     </View>
   );
@@ -16,7 +36,7 @@ function TaskRow(props) {
 
 export default function TaskContainer(props) {
   return (
-    <View style={styles.tasksContainer}>
+    <SafeAreaView style={styles.tasksContainer}>
       <FlatList
         contentContainerStyle={styles.flatList}
         data={props.data.map((item, index) => {
@@ -25,8 +45,15 @@ export default function TaskContainer(props) {
         renderItem={itemData => {
           return (
             <TaskRow
+              isDone={itemData.item.isDone}
               onDel={() => {
                 props.onDelTask(itemData.index);
+              }}
+              onDone={() => {
+                props.onDoneTask(itemData.index);
+              }}
+              onUnDone={() => {
+                props.onUnDoneTask(itemData.index);
               }}
             >
               {itemData.item.title}
@@ -34,7 +61,7 @@ export default function TaskContainer(props) {
           );
         }}
       ></FlatList>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -57,6 +84,15 @@ const styles = StyleSheet.create({
     marginTop: 20
   },
   textContainer: {
-    width: '60%'
+    width: '40%'
+  },
+  buttonsContainter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
+  button: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 70
   }
 });

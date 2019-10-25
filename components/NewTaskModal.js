@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   View,
   Text,
@@ -7,53 +7,65 @@ import {
   Button,
   TextInput,
   Keyboard,
-  TouchableWithoutFeedback
+  TouchableWithoutFeedback,
+  KeyboardAvoidingView,
+  Dimensions
 } from 'react-native';
 
 import Color from '../constant/Color';
-
+import { DimensionsContext } from '../App.js';
 export default function NewTaskModal(props) {
   const [input, setInput] = useState('');
+  const dimensions = useContext(DimensionsContext);
   return (
-    <Modal animationType="slide" visible={props.visible}>
+    <Modal
+      animationType="slide"
+      visible={props.visible}
+      supportedOrientations={['landscape', 'portrait']}
+    >
       <TouchableWithoutFeedback
         onPress={() => {
           Keyboard.dismiss();
         }}
       >
         <View style={styles.container}>
-          <View style={styles.card}>
-            <Text style={styles.title}>新しいタスクを追加する</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="新しいタスク..."
-              value={input}
-              onChangeText={text => {
-                setInput(text);
-              }}
-            ></TextInput>
-            <View style={styles.buttonContainer}>
-              <View style={styles.button}>
-                <Button
-                  title="追加"
-                  onPress={() => {
-                    props.addNewTask(input);
-                    setInput('');
-                    props.onCancel();
-                  }}
-                ></Button>
-              </View>
-              <View style={styles.button}>
-                <Button
-                  title="キャンセル"
-                  onPress={() => {
-                    setInput('');
-                    props.onCancel();
-                  }}
-                ></Button>
+          <KeyboardAvoidingView behavior="padding" keyboardVerticalOffset={20}>
+            <View style={{ ...styles.card, width: dimensions.width * 0.7 }}>
+              <Text style={styles.title}>新しいタスクを追加する</Text>
+              <TextInput
+                style={{
+                  ...styles.input,
+                  width: dimensions.height > 600 ? '70%' : '90%'
+                }}
+                placeholder="新しいタスク..."
+                value={input}
+                onChangeText={text => {
+                  setInput(text);
+                }}
+              ></TextInput>
+              <View style={styles.buttonContainer}>
+                <View style={styles.button}>
+                  <Button
+                    title="追加"
+                    onPress={() => {
+                      props.addNewTask(input);
+                      setInput('');
+                      props.onCancel();
+                    }}
+                  ></Button>
+                </View>
+                <View style={styles.button}>
+                  <Button
+                    title="Cancel"
+                    onPress={() => {
+                      setInput('');
+                      props.onCancel();
+                    }}
+                  ></Button>
+                </View>
               </View>
             </View>
-          </View>
+          </KeyboardAvoidingView>
         </View>
       </TouchableWithoutFeedback>
     </Modal>
@@ -68,7 +80,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.5)'
   },
   card: {
-    width: '80%',
+    maxHeight: 300,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'white',
@@ -78,17 +90,18 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    width: '70%'
+    justifyContent: 'space-around',
+    width: '90%'
   },
   input: {
-    width: '70%',
     borderBottomColor: Color.divider,
     borderBottomWidth: 1,
     padding: 10,
     marginVertical: 20
   },
   button: {
+    alignItems: 'center',
+    justifyContent: 'center',
     width: 90
   }
 });
