@@ -32,7 +32,7 @@ export default function App() {
   const [tasks, setTasks] = useState([]);
   useEffect(() => {
     AsyncStorage.getItem('tasks').then(tasks => {
-      if(tasks)setTasks(tasks)
+      if (tasks) setTasks(JSON.parse(tasks));
     });
   }, []);
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
