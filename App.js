@@ -31,7 +31,9 @@ export default function App() {
   const [isAddingNewTask, setIsAddingNewTask] = useState(false);
   const [tasks, setTasks] = useState([]);
   useEffect(() => {
-    AsyncStorage.getItem('tasks').then(tasks => setTasks(tasks));
+    AsyncStorage.getItem('tasks').then(tasks => {
+      if(tasks)setTasks(tasks)
+    });
   }, []);
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
   Dimensions.addEventListener('change', () => {
